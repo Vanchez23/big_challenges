@@ -14,9 +14,10 @@ class Detector():
         config = {'num_people': 0, 'all_wear': False, 'finally': False}
         config['num_people'] = self.people_detector.detect(img)
         if config['num_people'] == 1:
-            if self.wear_detector.detect(img):
+            wear = self.wear_detector.detect(img)
+            if wear[0]:
                 config['all_wear'] = True
                 pose = self.pose_estimation.detect(img)
-                if self.check_complit.detect(pose):
+                if self.check_complit.detect(wear[1], pose):
                     config['finnaly'] = True
         return config

@@ -1,9 +1,6 @@
 import numpy as np
 
 class Wear:
-    def __init__(self, points):
-        self.popo = points
-
     def padding(self, box, padx, pady):
         box['xmin'] -= padx
         box['xmax'] += padx
@@ -12,17 +9,27 @@ class Wear:
         box['ymax'] += pady
         return box
 
-    def point_check(self, box, name):
-        local_popo = self.popo[name]
+    def point_check(self, box, points, name = '', num = 1):
+        local_popo = points[name]
         mas = [False] * len(local_popo)
         for ind, coord in enumerate(local_popo):
             for _, row in box.iterrows():
                 if (coord.x >= row['xmin'] and coord.x <= row['xmax'] and
                     coord.y >= row['ymin'] and coord.y <= row['ymax']):
                     mas[ind] = True
-        return sum(mas) >= 1
+        return sum(mas) >= num
 
-    def any_two_points(self, box, name):
-        local_popo = self.popo[name]
-        mas = [False] * len(local_popo)
-        for ind, coord in enumerate(local_popo):
+class CheckComplite:
+    def __init__(self):
+        self.wear = Wear()
+    def detect(self, box, pose):
+        shield_check = self.wear.point_check(box, pose, name = 'shield', num = 1)
+        jacket_check = self.wear.point_check(box, pose, name='jacket', num=1)
+        left_glove_check = self.wear.point_check(box, pose, name='left_glove', num=1)
+        right_glove_check = self.wear.point_check(box, pose, name='right glove', num=1)
+        pants_check = self.wear.point_check(box, pose, name='pants', num=1)
+
+        if shield_check and jacket_check and left_glove_check and right_glove_check and pants_check:
+            return True
+        else:
+            return False

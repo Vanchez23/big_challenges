@@ -1,11 +1,12 @@
 import cv2
 import mediapipe as mp
-from big_challenges.DeepProtect import Wear
+from DeepProtect import Wear
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 
 WIDTH = 640
 HEIGHT = 360
+
 
 
 # For webcam input:
@@ -46,6 +47,8 @@ with mp_pose.Pose(
 
            'pants': [(coords[25].x * WIDTH, coords[25].y * HEIGHT),
                      (coords[26].x * WIDTH, coords[26].y * HEIGHT)]}
+    wear = Wear(points = ret)
+    wear.point_check(box = )
 
 
 
