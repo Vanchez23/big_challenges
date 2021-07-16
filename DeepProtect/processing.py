@@ -1,39 +1,23 @@
-import torch
 import cv2
-import numpy as np
-from typing import Tuple, List
-from .utils import letterbox, non_max_suppression, scale_coords
+import torch
 
-class WearDetector():
-    def __init__(self, path):
-        self.model = torch.hub.load('ultralytics/yolov5', 'yolov5s', autoshape=False, classes = 5)
-        self.model.load_state_dict(torch.load(path)['model'].state_dict())
+def preprocess(path_to_img):
+    orig_img = cv2.cvtColor(cv2.imread(path_to_img), cv2.COLOR_BGR2RGB)
+    img = letterbox(orig_img)[0]
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = img.transpose(2, 0, 1)
+    img_tensor = torch.from_numpy(img).to('cuda').float()
+    img_tensor /=255
+    img_tensor = img_tensor.unsqueeze(0)
+    model.eval()
+    with torch.no_grad():
+        results = model(img_tensor)
+    return results[0], list(img_tensor.shape), list(orig_img.shape), [0, 0, img.shape[1], img.shape[0]]
 
-    def detect(self, img):
-        pred, tensor_shape, orig_shape, bbox = self.preprocess(img)
-        list_of_boxes = self.postprocess(pred, tensor_shape, orig_shape, bbox)
-        return []
-        #print(list_of_boxes)
-        #df = self.model(img).pandas().xyxy[0]
-        #return [df['class'].unique().shape[0] == 5, df]
-
-    def preprocess(self, img):
-        orig_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img = letterbox(orig_img)[0]
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img = img.transpose(2, 0, 1)
-        img_tensor = torch.from_numpy(img).to('cuda').float()
-        img_tensor /= 255
-        img_tensor = img_tensor.unsqueeze(0)
-        self.model.eval()
-        with torch.no_grad():
-            results = self.model(img_tensor)
-        return results[0], list(img_tensor.shape), list(orig_img.shape), [0, 0, img.shape[1], img.shape[0]]
-
-    def postprocess(self, pred: (Tuple, List, np.ndarray), tensor_shape: (List, np.ndarray), orig_shape: List, bbox: List,
+    def postprocess(pred: (Tuple, List, np.ndarray), tensor_shape: (List, np.ndarray), orig_shape: List, bbox: List,
                     normalize_output: bool = False, conf_thres: float = 0.3, iou_thres: float = 0.3,
                     agnostic: bool = True, device='cuda',
-                    classes=['gloves', 'pants', 'jacket', 'helmet', 'shield']) -> List:
+                    classes=['gloves', 'pants', 'jacket', 'helmet', 'shield', 'person']) -> List:
         """
         Обработка предсказаний модели и отбор детекций.
 
