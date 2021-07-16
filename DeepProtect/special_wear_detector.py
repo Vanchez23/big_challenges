@@ -12,8 +12,18 @@ class WearDetector():
     def detect(self, img):
         pred, tensor_shape, orig_shape, bbox = self.preprocess(img)
         list_of_boxes = self.postprocess(pred, tensor_shape, orig_shape, bbox)
-        return []
-        #print(list_of_boxes)
+        num = 0
+
+        for el in list_of_boxes:
+            if (el['label'] == 'shield' or
+                    el['label'] == 'helmet' or
+                    el['label'] == 'jacket' or
+                    el['label'] == 'pants' or
+                    el['label'] == 'gloves'):
+                num += 1
+        return [num == 6, list_of_boxes]
+
+
         #df = self.model(img).pandas().xyxy[0]
         #return [df['class'].unique().shape[0] == 5, df]
 

@@ -13,9 +13,9 @@ class Wear:
         local_popo = points[name]
         mas = [False] * len(local_popo)
         for ind, coord in enumerate(local_popo):
-            for _, row in box.iterrows():
-                if (coord.x >= row['xmin'] and coord.x <= row['xmax'] and
-                    coord.y >= row['ymin'] and coord.y <= row['ymax']):
+            for row in box:
+                if (coord.x >= row['x1'] and coord.x <= row['x2'] and
+                    coord.y >= row['y1'] and coord.y <= row['y2']):
                     mas[ind] = True
         return sum(mas) >= num
 

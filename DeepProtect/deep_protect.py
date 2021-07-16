@@ -16,6 +16,7 @@ class Detector():
         if config['num_people'] == 1:
             wear = self.wear_detector.detect(img)
             if wear[0]:
+                # print('Full weared')
                 config['all_wear'] = True
                 pose = self.pose_estimation.detect(img)
                 if self.check_complit.detect(wear[1], pose):
