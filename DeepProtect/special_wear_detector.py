@@ -21,7 +21,7 @@ class WearDetector():
                     el['label'] == 'pants' or
                     el['label'] == 'gloves'):
                 num += 1
-        return [num == 6, list_of_boxes]
+        return [num >= 3, list_of_boxes]
 
 
         #df = self.model(img).pandas().xyxy[0]
