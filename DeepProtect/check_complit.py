@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 class Wear:
     def padding(self, box, padx, pady):
@@ -12,12 +13,16 @@ class Wear:
     def point_check(self, box, points, name = '', num = 1):
         local_popo = points[name]
         mas = [False] * len(local_popo)
+        #df = pd.DataFrame(box)
         for ind, coord in enumerate(local_popo):
             for row in box:
+                # if 'glove' in name and row['label'] == 'gloves':
+                #
                 if row['label'] == name:
                     if (coord[0] >= row['x1'] and coord[0] <= row['x2'] and
                         coord[1] >= row['y1'] and coord[1] <= row['y2']):
                         mas[ind] = True
+
         return sum(mas) >= num
 
 class CheckComplite:

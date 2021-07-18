@@ -16,7 +16,11 @@ class PoseEstimator():
                 min_tracking_confidence=0.5) as pose:
             image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
             results = pose.process(image)
-            coords = results.pose_landmarks.landmark
+            try:
+                coords = results.pose_landmarks.landmark
+            except AttributeError:
+                print('error')
+                return None
 
         ret = {'shield': [(coords[0].x * WIDTH, coords[0].y * HEIGHT),
                           (coords[9].x * WIDTH, coords[9].y * HEIGHT)],
