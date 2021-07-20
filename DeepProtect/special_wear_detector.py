@@ -66,7 +66,7 @@ class WearDetector():
                     normalize_output: bool = False, conf_thres: float = 0.5, iou_thres: float = 0.3,
                     agnostic: bool = True, device='cuda',
                     classes=['gloves', 'pants', 'jacket', 'helmet', 'shield']) -> List:
-            if isinstance(pred, (Tuple, List, np.ndarray)):
+        if isinstance(pred, (Tuple, List, np.ndarray)):
             pred = pred[0]
 
         pred = non_max_suppression(
