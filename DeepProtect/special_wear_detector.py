@@ -54,29 +54,19 @@ class WearDetector():
         img = img.transpose(2, 0, 1)
         img_tensor = torch.from_numpy(img).to('cuda').float()
         img_tensor /= 255
+
         img_tensor = img_tensor.unsqueeze(0)
         self.model.eval()
         with torch.no_grad():
             results = self.model(img_tensor)
+
         return results[0], list(img_tensor.shape), list(orig_img.shape), [0, 0, img.shape[1], img.shape[0]]
 
     def postprocess(self, pred: (Tuple, List, np.ndarray), tensor_shape: (List, np.ndarray), orig_shape: List, bbox: List,
                     normalize_output: bool = False, conf_thres: float = 0.5, iou_thres: float = 0.3,
                     agnostic: bool = True, device='cuda',
                     classes=['gloves', 'pants', 'jacket', 'helmet', 'shield']) -> List:
-        """
-        Обработка предсказаний модели и отбор детекций.
-
-        Args:
-            pred: предсказания модели.
-            tensor_shape: размер входного тензора.
-            orig_shape: оригинальный размер изображения.
-            bbox: координаты bounding box.
-
-        Returns:
-            Очищенные предсказания.
-        """
-        if isinstance(pred, (Tuple, List, np.ndarray)):
+            if isinstance(pred, (Tuple, List, np.ndarray)):
             pred = pred[0]
 
         pred = non_max_suppression(
