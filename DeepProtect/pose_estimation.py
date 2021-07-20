@@ -1,5 +1,6 @@
 import cv2
 import mediapipe as mp
+import traceback
 
 WIDTH = 640
 HEIGHT = 360
@@ -16,7 +17,12 @@ class PoseEstimator():
                 min_tracking_confidence=0.5) as pose:
             image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
             results = pose.process(image)
-            coords = results.pose_landmarks.landmark
+            try:
+                coords = results.pose_landmarks.landmark
+            except AttributeError as e:
+                print(e)
+                # print('error')
+                return None
 
         ret = {'shield': [(coords[0].x * WIDTH, coords[0].y * HEIGHT),
                           (coords[9].x * WIDTH, coords[9].y * HEIGHT)],
@@ -29,10 +35,10 @@ class PoseEstimator():
                               (coords[15].x * WIDTH, coords[15].y * HEIGHT),
                               (coords[17].x * WIDTH, coords[17].y * HEIGHT)],
 
-               'right_glove': [(coords[22].x * WIDTH, coords[22].y * HEIGHT),
-                               (coords[20].x * WIDTH, coords[20].y * HEIGHT),
-                               (coords[16].x * WIDTH, coords[16].y * HEIGHT),
-                               (coords[18].x * WIDTH, coords[18].y * HEIGHT)],
+                'right_glove': [(coords[22].x * WIDTH, coords[22].y * HEIGHT),
+                                       (coords[20].x * WIDTH, coords[20].y * HEIGHT),
+                                       (coords[16].x * WIDTH, coords[16].y * HEIGHT),
+                                       (coords[18].x * WIDTH, coords[18].y * HEIGHT)],
 
                'pants': [(coords[25].x * WIDTH, coords[25].y * HEIGHT),
                          (coords[26].x * WIDTH, coords[26].y * HEIGHT)]}

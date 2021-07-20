@@ -3,25 +3,45 @@ import cv2
 import numpy as np
 from typing import Tuple, List
 from .utils import letterbox, non_max_suppression, scale_coords
+from random import randrange
 
 class WearDetector():
-    def __init__(self, path):
-        self.model = torch.hub.load('ultralytics/yolov5', 'yolov5s', autoshape=False, classes = 5)
+    def __init__(self, path, is_drawing = True):
+        self.model = torch.hub.load('ultralytics/yolov5', 'yolov5m', autoshape=False, classes = 6)
         self.model.load_state_dict(torch.load(path)['model'].state_dict())
+        self.isDrawing = is_drawing
+
+    def plot_one_box(self, x, im, color=(128, 128, 128), label=None, line_thickness=3):
+        # Plots one bounding box on image 'im' using OpenCV
+        assert im.data.contiguous, 'Image not contiguous. Apply np.ascontiguousarray(im) to plot_on_box() input image.'
+        tl = line_thickness or round(0.002 * (im.shape[0] + im.shape[1]) / 2) + 1  # line/font thickness
+        c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
+        cv2.rectangle(im, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)
+        if label:
+            tf = max(tl - 1, 1)  # font thickness
+            t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
+            c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
+            cv2.rectangle(im, c1, c2, color, -1, cv2.LINE_AA)  # filled
+            cv2.putText(im, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
 
     def detect(self, img):
         pred, tensor_shape, orig_shape, bbox = self.preprocess(img)
         list_of_boxes = self.postprocess(pred, tensor_shape, orig_shape, bbox)
-        num = 0
+        num = len(list_of_boxes)
 
-        for el in list_of_boxes:
-            if (el['label'] == 'shield' or
-                    el['label'] == 'helmet' or
-                    el['label'] == 'jacket' or
-                    el['label'] == 'pants' or
-                    el['label'] == 'gloves'):
-                num += 1
-        return [num == 6, list_of_boxes]
+        if self.isDrawing:
+            for el in list_of_boxes:
+                self.plot_one_box((el['x1'], el['y1'], el['x2'], el['y2']), img, label=el['label'], color=(255, 0, 0), line_thickness=2)
+                '''start_point = (int(el['x1']), int(el['y1']))
+                end_point = (int(el['x2']), int(el['y2']))
+                #color = (randrange(0, 255), randrange(0, 255), randrange(0, 255))
+                thickness = 2
+                img = cv2.rectangle(img, start_point, end_point, color, thickness)
+                cv2.putText(img, el['label'], (int(el['x1']) + 10, int(el['y1']) - 20), cv2.FONT_HERSHEY_SIMPLEX, 1, color, thickness, cv2.LINE_AA)'''
+
+            return [num >= 6, list_of_boxes, img]
+        else:
+            return [num >= 6, list_of_boxes]
 
 
         #df = self.model(img).pandas().xyxy[0]
@@ -41,7 +61,7 @@ class WearDetector():
         return results[0], list(img_tensor.shape), list(orig_img.shape), [0, 0, img.shape[1], img.shape[0]]
 
     def postprocess(self, pred: (Tuple, List, np.ndarray), tensor_shape: (List, np.ndarray), orig_shape: List, bbox: List,
-                    normalize_output: bool = False, conf_thres: float = 0.3, iou_thres: float = 0.3,
+                    normalize_output: bool = False, conf_thres: float = 0.5, iou_thres: float = 0.3,
                     agnostic: bool = True, device='cuda',
                     classes=['gloves', 'pants', 'jacket', 'helmet', 'shield']) -> List:
         """
@@ -89,5 +109,6 @@ class WearDetector():
                                       'y1': xyxy[1],
                                       'x2': xyxy[2],
                                       'y2': xyxy[3]})
+                    #plot_one_box(xyxy, im0, label=label, color=(255, 0, 0), line_thickness=2)
 
         return new_preds
