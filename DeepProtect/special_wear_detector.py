@@ -7,7 +7,7 @@ from random import randrange
 
 class WearDetector():
     def __init__(self, path, is_drawing = True):
-        self.model = torch.hub.load('ultralytics/yolov5', 'yolov5s', autoshape=False, classes = 6)
+        self.model = torch.hub.load('ultralytics/yolov5', 'yolov5m', autoshape=False, classes = 6)
         self.model.load_state_dict(torch.load(path)['model'].state_dict())
         self.isDrawing = is_drawing
 
@@ -39,9 +39,9 @@ class WearDetector():
                 img = cv2.rectangle(img, start_point, end_point, color, thickness)
                 cv2.putText(img, el['label'], (int(el['x1']) + 10, int(el['y1']) - 20), cv2.FONT_HERSHEY_SIMPLEX, 1, color, thickness, cv2.LINE_AA)'''
 
-            return [num >= 5, list_of_boxes, img]
+            return [num >= 6, list_of_boxes, img]
         else:
-            return [num >= 5, list_of_boxes]
+            return [num >= 6, list_of_boxes]
 
 
         #df = self.model(img).pandas().xyxy[0]

@@ -14,11 +14,17 @@ class Wear:
         local_popo = points[name]
         mas = [False] * len(local_popo)
         #df = pd.DataFrame(box)
+        popusk = []
         for ind, coord in enumerate(local_popo):
-            for row in box:
-                # if 'glove' in name and row['label'] == 'gloves':
-                #
-                if row['label'] == name:
+            for ind_box, row in enumerate(box):
+                if 'glove' in name and row['label'] == 'gloves':
+                    if ind_box in popusk:
+                        continue
+                    if (coord[0] >= row['x1'] and coord[0] <= row['x2'] and
+                        coord[1] >= row['y1'] and coord[1] <= row['y2']):
+                        mas[ind] = True
+                        popusk.append(ind_box)
+                elif row['label'] == name:
                     if (coord[0] >= row['x1'] and coord[0] <= row['x2'] and
                         coord[1] >= row['y1'] and coord[1] <= row['y2']):
                         mas[ind] = True
