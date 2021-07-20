@@ -14,12 +14,11 @@ pose_estimation=0
 
 #instatiate flask app  
 app = Flask(__name__, template_folder='./templates')
+API_CAMERA = 'rtsp://admin:camera12345@172.22.103.2/ch1-s1?tcp'
 
-
-camera = cv2.VideoCapture(0)
+camera = cv2.VideoCapture(API_CAMERA)
 
 def gen_frames():  # generate frame by frame from camera
-    global out, capture,rec_frame
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
     with mp_pose.Pose(
@@ -29,21 +28,20 @@ def gen_frames():  # generate frame by frame from camera
             success, frame = camera.read()
             if success:
                 if(pose_estimation):
-                    success, image = camera.read()
+                    # success, frame = camera.read()
                     # Flip the image horizontally for a later selfie-view display, and convert
                     # the BGR image to RGB.
-                    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     # To improve performance, optionally mark the image as not writeable to
                     # pass by reference.
-                    image.flags.writeable = False
-                    results = pose.process(image)
+                    frame.flags.writeable = False
+                    results = pose.process(frame)
 
                     # Draw the pose annotation on the image.
-                    image.flags.writeable = True
-                    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+                    frame.flags.writeable = True
+                    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
                     mp_drawing.draw_landmarks(
-                        image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
-                    frame = image
+                        frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
 
                 try:
                     ret, buffer = cv2.imencode('.jpg', cv2.flip(frame,1))
@@ -84,7 +82,7 @@ def tasks():
                 cv2.destroyAllWindows()
 
             else:
-                camera = cv2.VideoCapture(0)
+                camera = cv2.VideoCapture(API_CAMERA)
                 switch = 1
 
     elif request.method=='GET':
