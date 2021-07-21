@@ -6,10 +6,9 @@ from .utils import letterbox, non_max_suppression, scale_coords
 from random import randrange
 
 class WearDetector():
-    def __init__(self, path, is_drawing = True):
+    def __init__(self, path):
         self.model = torch.hub.load('ultralytics/yolov5', 'yolov5m', autoshape=False, classes = 6)
         self.model.load_state_dict(torch.load(path)['model'].state_dict())
-        self.isDrawing = is_drawing
 
     def plot_one_box(self, x, im, color=(128, 128, 128), label=None, line_thickness=3):
         # Plots one bounding box on image 'im' using OpenCV
@@ -24,12 +23,12 @@ class WearDetector():
             cv2.rectangle(im, c1, c2, color, -1, cv2.LINE_AA)  # filled
             cv2.putText(im, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
 
-    def detect(self, img):
+    def detect(self, img, isDrawing = True):
         pred, tensor_shape, orig_shape, bbox = self.preprocess(img)
         list_of_boxes = self.postprocess(pred, tensor_shape, orig_shape, bbox)
         num = len(list_of_boxes)
 
-        if self.isDrawing:
+        if isDrawing:
             for el in list_of_boxes:
                 self.plot_one_box((el['x1'], el['y1'], el['x2'], el['y2']), img, label=el['label'], color=(255, 0, 0), line_thickness=2)
                 '''start_point = (int(el['x1']), int(el['y1']))
