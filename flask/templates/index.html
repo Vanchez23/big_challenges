@@ -26,11 +26,12 @@
 
 <div class="row">
     <div class="col-lg-8  offset-lg-1">
+
+        <img src="{{ url_for('video_feed') }}" height="80%">
         <form method="post" action="{{ url_for('tasks') }}">
         <input class="btn btn-secondary" type="submit" value="Stop/Start" name="stop" />
         <input class="btn btn-secondary" type="submit" value="Pose estimation" name="pose_estimation" />
         </form>
-        <img src="{{ url_for('video_feed') }}" height="80%">
 
     </div>
 </div>
