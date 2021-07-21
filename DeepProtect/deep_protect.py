@@ -23,7 +23,7 @@ class Detector():
 
             if wear[0]:
                 config['all_wear'] = True
-                pose = self.pose_estimation.detect(orig_img)
+                pose = self.pose_estimation.detect(orig_img, isDrawing = isDrawing)
                 if pose != None:
                     if isDrawing:
                         img = pose[1]
@@ -36,9 +36,11 @@ class Detector():
             else:
                 cv2.putText(img, 'Not complete', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)
         elif config['num_people'] == 0:
-            cv2.putText(img, 'Zero people', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)
+            if isDrawing:
+                cv2.putText(img, 'Zero people', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)
         else:
-            cv2.putText(img, 'More than one people', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)
+            if isDrawing:
+                cv2.putText(img, 'More than one people', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)
         if isDrawing:
             return [config, img]
         else:

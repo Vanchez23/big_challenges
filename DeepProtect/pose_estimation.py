@@ -6,16 +6,16 @@ WIDTH = 1280
 HEIGHT = 720
 
 class PoseEstimator():
-    def __init__(self, isDrawing = True):
+    def __init__(self):
         self.mp_pose = mp.solutions.pose
         self.mp_drawing = mp.solutions.drawing_utils
         self.points = [0, 12, 11, 24, 23, 20, 21, 19, 18, 16, 22, 15, 17, 25, 26]
 
-    def detect(self, image, isDrawing = True):
-
+    def detect(self, image, isDrawing=True):
         with self.mp_pose.Pose(
                 min_detection_confidence=0.5,
-                min_tracking_confidence=0.5) as pose:
+                min_tracking_confidence=0.5,
+                model_complexity = 2) as pose:
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             results = pose.process(image)
             try:
