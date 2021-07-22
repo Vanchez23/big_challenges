@@ -34,7 +34,8 @@ class Detector():
                     else:
                         cv2.putText(img, 'Undressed', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)
             else:
-                cv2.putText(img, 'Not complete', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)
+                if isDrawing:
+                    cv2.putText(img, 'Not complete', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)
         elif config['num_people'] == 0:
             if isDrawing:
                 cv2.putText(img, 'Zero people', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)

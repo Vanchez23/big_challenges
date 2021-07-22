@@ -1,5 +1,6 @@
 from DeepProtect import Detector
 import cv2
+
 IS_DRAWING = True
 detector = Detector(path_to_model = '/home/student/Projects/BC_Object_Detection/models/best_Artem2.pt')
 

@@ -19,7 +19,7 @@ pose_estimation=0
 #instatiate flask app  
 app = Flask(__name__, template_folder='./templates')
 API_CAMERA = 'rtsp://admin:camera12345@172.22.103.2/ch1-s1?tcp'
-detector = Detector(path_to_model = '/home/student/model/best.pt')
+detector = Detector(path_to_model = '/home/student/Projects/BC_Object_Detection/models/best_Artem2.pt')
 
 camera = cv2.VideoCapture(0)
 
