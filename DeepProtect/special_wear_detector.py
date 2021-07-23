@@ -29,19 +29,19 @@ class WearDetector():
         list_of_boxes = self.postprocess(pred, tensor_shape, orig_shape, bbox)
 
         df = pd.DataFrame(list_of_boxes)
-        num = 0
-        num += df[df['label'] == 'shield'].shape[0]
-        num += df[df['label'] == 'jacket'].shape[0]
-        num += df[df['label'] == 'pants'].shape[0]
-        num += df[df['label'] == 'gloves'].shape[0]
+        mas = [False] * 4
+        mas[0] = df[df['label'] == 'shield'].shape[0] == 1
+        mas[1] = df[df['label'] == 'jacket'].shape[0] == 1
+        mas[2] = df[df['label'] == 'pants'].shape[0] == 1
+        mas[3] = df[df['label'] == 'gloves'].shape[0] == 2
 
         if isDrawing:
             for el in list_of_boxes:
                 self.plot_one_box((el['x1'], el['y1'], el['x2'], el['y2']), img, label=el['label'], color=(255, 0, 0), line_thickness=2)
 
-            return [num >= 5, list_of_boxes, img]
+            return [sum(mas) == 4, list_of_boxes, img]
         else:
-            return [num >= 5, list_of_boxes]
+            return [sum(mas) == 4, list_of_boxes]
 
 
         #df = self.model(img).pandas().xyxy[0]
