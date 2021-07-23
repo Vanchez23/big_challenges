@@ -11,12 +11,15 @@ import mediapipe as mp
 from DeepProtect import Detector
 
 
-global pose_estimation, switch
-switch=1
 pose_estimation=0
-is_opened = True
-
-
+show_boxes = 0
+reason = 0
+REASON = {0:'Всё хорошо',
+          1:'Нет людей в кадре',
+          2:'Больше чем 1 человек',
+          3:'Не хватает элемента спецодежды',
+          4:'Одежда не на человек'}
+res_ = 0
 #instatiate flask app  
 app = Flask(__name__, template_folder='./templates')
 detector = Detector(path_to_model = '/home/student/model/best.pt')
@@ -24,21 +27,24 @@ client = rtsp.Client(rtsp_server_uri = 'rtsp://admin:camera12345@172.22.103.2', 
 
 
 def gen_frames():  # generate frame by frame from camera
+    global res_
     while client.isOpened():
-        frame = client.read(raw=True)
-        if(pose_estimation):
-            res = detector.detect(frame, isDrawing=True)
-            if isinstance(res, list):
-                frame = res[1]
-            else:
-                if res == {'num_people': 1, 'all_wear': True, 'finally': True}:
-                    print('green')
+        image = client.read(raw=True)
+        res = detector.detect(image, isDrawing= show_boxes)
+        frame = res[1] if show_boxes else image
+        if(reason):
+            res = detector.detect(image, isDrawing=show_boxes)
+            frame = res[1] if show_boxes else image
+            reason_ = res[0].get('reason')
+            res_ =  REASON.get(reason_)
 
         try:
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
+
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
         except Exception as e:
             print(e)
 
@@ -55,24 +61,20 @@ def video_feed():
 
 @app.route('/requests',methods=['POST','GET'])
 def tasks():
-    global switch, client, is_opened
+    global pose_estimation, show_boxes
     if request.method == 'POST':
-        if  request.form.get('pose_estimation') == 'Pose estimation':
-            global pose_estimation
-            pose_estimation=not pose_estimation
+        if  request.form.get('show_boxes') == 'Отображение боксов/ключевых точек':
+            global show_boxes
+            show_boxes=not show_boxes
 
-        elif request.form.get('stop') == 'Stop/Start':
-            if (switch == 1):
-                switch = 0
-                client.close()
+        elif  request.form.get('reason') == 'Подробный отчёт':
+            global reason
+            reason=not reason
 
-            else:
-                client = rtsp.Client(rtsp_server_uri = 'rtsp://admin:camera12345@172.22.103.2',verbose=True)
-                switch = 1
 
     elif request.method=='GET':
         return render_template('index.html')
-    return render_template('index.html')
+    return render_template('index.html', num = show_boxes,reason = reason,res = res_)
 
 
 

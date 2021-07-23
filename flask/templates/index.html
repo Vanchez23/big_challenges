@@ -24,13 +24,22 @@
 </header>
 <body>
 
+
 <div class="row">
     <div class="col-lg-8  offset-lg-1">
-
-        <img src="{{ url_for('video_feed') }}" height="80%">
+        <img src="{{ url_for('video_feed') }}" height="80%" class="center-block" >
         <form method="post" action="{{ url_for('tasks') }}">
-        <input class="btn btn-secondary" type="submit" value="Stop/Start" name="stop" />
-        <input class="btn btn-secondary" type="submit" value="Pose estimation" name="pose_estimation" />
+            {% if reason == True %}
+            <h1>{{ url_for(res) }}</h1>
+        {% endif %}
+        {% if num == True %}
+            <input class="btn btn-dark" type="submit" value="Отображение боксов/ключевых точек" name="show_boxes" />
+
+         {% else  %}
+            <input class="btn btn-light" type="submit" value="Отображение боксов/ключевых точек" name="show_boxes" />
+         {% endif %}
+
+        <input class="btn btn-light" type="submit" value="Подробный отчёт" name="reason" />
         </form>
 
     </div>
