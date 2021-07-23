@@ -8,7 +8,7 @@ import pandas as pd
 
 class WearDetector():
     def __init__(self, path):
-        self.model = torch.hub.load('ultralytics/yolov5', 'yolov5m', autoshape=False, classes = 6)
+        self.model = torch.hub.load('ultralytics/yolov5', 'yolov5s', autoshape=False, classes = 5)
         self.model.load_state_dict(torch.load(path)['model'].state_dict())
 
     def plot_one_box(self, x, im, color=(128, 128, 128), label=None, line_thickness=3):
@@ -27,6 +27,11 @@ class WearDetector():
     def detect(self, img, isDrawing = True):
         pred, tensor_shape, orig_shape, bbox = self.preprocess(img)
         list_of_boxes = self.postprocess(pred, tensor_shape, orig_shape, bbox)
+        if len(list_of_boxes) == 0:
+            if isDrawing:
+                return [0, list_of_boxes, img]
+            else:
+                return [0, list_of_boxes]
 
         df = pd.DataFrame(list_of_boxes)
         mas = [False] * 4

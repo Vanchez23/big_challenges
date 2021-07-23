@@ -14,7 +14,7 @@ class Detector():
     def detect(self, orig_img, isDrawing = True):
         img = orig_img
         config = {'num_people': 0, 'all_wear': False, 'finally': False, 'reason': 0}
-        config['num_people'] = self.people_detector.detect(orig_img)
+        config['num_people'], bbox = self.people_detector.detect(orig_img)
         if config['num_people'] == 1:
             wear = self.wear_detector.detect(orig_img, isDrawing = isDrawing)
             if isDrawing:
@@ -23,11 +23,11 @@ class Detector():
 
             if wear[0]:
                 config['all_wear'] = True
-                pose = self.pose_estimation.detect(orig_img, isDrawing = isDrawing)
+                pose = self.pose_estimation.detect(orig_img, bbox = bbox, isDrawing = isDrawing)
                 if pose != None:
-                    if isDrawing:
-                        img = pose[1]
-                        pose = pose[0]
+                    # if isDrawing:
+                    #     img = pose[1]
+                    #     pose = pose[0]
                     if self.check_complit.detect(img, wear[1], pose):
                         config['finally'] = True
                         #cv2.putText(img, 'Dressed', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)
@@ -41,7 +41,5 @@ class Detector():
         else:
             config['reason'] = 2
 
-        if isDrawing:
-            return [config, img]
-        else:
-            return config
+
+        return [config, img]

@@ -3,11 +3,13 @@ import cv2
 import pandas as pd
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
+#Скачать папку weights с сетевого диска и положить в папку DeepProtect
+
 df = pd.read_csv('videos/default_Misha1.txt', delimiter=' ', names=['frame', 'labels'])
 y_true = df['labels'].tolist()
 
 IS_DRAWING = True
-detector = Detector(path_to_model = '/home/student/Projects/BC_Object_Detection/models/best_Artem2.pt')
+detector = Detector(path_to_model = '/home/student/Projects/BC_Object_Detection/models/best_Denis.pt')
 
 #cap = cv2.VideoCapture('rtsp://admin:camera12345@172.22.103.2')
 cap = cv2.VideoCapture('videos/Misha1.mp4')
@@ -17,11 +19,11 @@ cap = cv2.VideoCapture('videos/Misha1.mp4')
 y_pred = []
 
 while True:
+    cap.grab()
     _, frame = cap.read()
     if _ == False:
         break
     else:
-        # cap.grab()
         orig_img = frame.copy()
         res = detector.detect(frame, isDrawing=IS_DRAWING)
         if isinstance(res, list):
@@ -31,7 +33,7 @@ while True:
         else:
             status = res['reason']
             completed = res[0]['finally']
-        y_pred.append(int(completed))
+        #y_pred.append(int(completed))
 
         if completed:
             cv2.putText(frame, 'Dressed', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)
@@ -50,8 +52,6 @@ while True:
         key = cv2.waitKey(20)
         if key == 27:  # exit on ESC
             break
-print('y_pred = ', y_pred)
-print('y_true = ', y_true)
 cap.release()
 # out.release()
 cv2.destroyAllWindows()
