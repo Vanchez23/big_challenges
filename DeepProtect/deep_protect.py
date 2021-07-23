@@ -13,7 +13,7 @@ class Detector():
 
     def detect(self, orig_img, isDrawing = True):
         img = orig_img
-        config = {'num_people': 0, 'all_wear': False, 'finally': False}
+        config = {'num_people': 0, 'all_wear': False, 'finally': False, 'reason': 0}
         config['num_people'] = self.people_detector.detect(orig_img)
         if config['num_people'] == 1:
             wear = self.wear_detector.detect(orig_img, isDrawing = isDrawing)
@@ -30,18 +30,17 @@ class Detector():
                         pose = pose[0]
                     if self.check_complit.detect(img, wear[1], pose):
                         config['finally'] = True
-                        cv2.putText(img, 'Dressed', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)
+                        #cv2.putText(img, 'Dressed', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)
                     else:
-                        cv2.putText(img, 'Undressed', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)
+                        config['reason'] = 4
+                        #cv2.putText(img, 'Undressed', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)
             else:
-                if isDrawing:
-                    cv2.putText(img, 'Not complete', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)
+                config['reason'] = 3
         elif config['num_people'] == 0:
-            if isDrawing:
-                cv2.putText(img, 'Zero people', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)
+            config['reason'] = 1
         else:
-            if isDrawing:
-                cv2.putText(img, 'More than one people', (50, 50), 0, 1, [225, 255, 255], thickness=3, lineType=cv2.LINE_AA)
+            config['reason'] = 2
+
         if isDrawing:
             return [config, img]
         else:
