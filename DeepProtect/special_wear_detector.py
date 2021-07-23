@@ -4,6 +4,7 @@ import numpy as np
 from typing import Tuple, List
 from .utils import letterbox, non_max_suppression, scale_coords
 from random import randrange
+import pandas as pd
 
 class WearDetector():
     def __init__(self, path):
@@ -26,21 +27,21 @@ class WearDetector():
     def detect(self, img, isDrawing = True):
         pred, tensor_shape, orig_shape, bbox = self.preprocess(img)
         list_of_boxes = self.postprocess(pred, tensor_shape, orig_shape, bbox)
-        num = len(list_of_boxes)
+
+        df = pd.DataFrame(list_of_boxes)
+        num = 0
+        num += df[df['label'] == 'shield'].shape[0]
+        num += df[df['label'] == 'jacket'].shape[0]
+        num += df[df['label'] == 'pants'].shape[0]
+        num += df[df['label'] == 'gloves'].shape[0]
 
         if isDrawing:
             for el in list_of_boxes:
                 self.plot_one_box((el['x1'], el['y1'], el['x2'], el['y2']), img, label=el['label'], color=(255, 0, 0), line_thickness=2)
-                '''start_point = (int(el['x1']), int(el['y1']))
-                end_point = (int(el['x2']), int(el['y2']))
-                #color = (randrange(0, 255), randrange(0, 255), randrange(0, 255))
-                thickness = 2
-                img = cv2.rectangle(img, start_point, end_point, color, thickness)
-                cv2.putText(img, el['label'], (int(el['x1']) + 10, int(el['y1']) - 20), cv2.FONT_HERSHEY_SIMPLEX, 1, color, thickness, cv2.LINE_AA)'''
 
-            return [num >= 6, list_of_boxes, img]
+            return [num >= 5, list_of_boxes, img]
         else:
-            return [num >= 6, list_of_boxes]
+            return [num >= 5, list_of_boxes]
 
 
         #df = self.model(img).pandas().xyxy[0]
