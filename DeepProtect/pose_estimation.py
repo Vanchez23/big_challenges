@@ -7,6 +7,8 @@ import numpy as np
 from DeepProtect.hrnet.utils.utils_hrnet import draw_joints, draw_points, COLORS, LINK_PAIRS, POINT_COLOR
 from typing import List, Dict
 
+print(os.getcwd())
+
 CFG_PATH = 'DeepProtect/hrnet/configs/hrnet_config.yaml'
 
 class PoseEstimator():

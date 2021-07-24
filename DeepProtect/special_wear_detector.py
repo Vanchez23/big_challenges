@@ -8,7 +8,7 @@ import pandas as pd
 
 class WearDetector():
     def __init__(self, path):
-        self.model = torch.hub.load('ultralytics/yolov5', 'yolov5s', autoshape=False, classes = 5)
+        self.model = torch.hub.load('ultralytics/yolov5', 'yolov5m', autoshape=False, classes=5)
         self.model.load_state_dict(torch.load(path)['model'].state_dict())
 
     def plot_one_box(self, x, im, color=(128, 128, 128), label=None, line_thickness=3):
