@@ -9,6 +9,6 @@ class PeopleDetector():
         df_person = df[df['name'] == 'person']
         if df_person.shape[0] == 1:
             df_person = df_person.iloc[0]
-            return [1, (df_person['xmin'], df_person['ymin'], df_person['xmax'], df_person['xmax'])]
+            return [1, (df_person['xmin'], df_person['ymin'], df_person['xmax'], df_person['ymax'])]
         else:
             return [df_person.shape[0], None]

@@ -7,7 +7,7 @@ import numpy as np
 from big_challenges.DeepProtect.hrnet.utils.utils_hrnet import draw_joints, draw_points, COLORS, LINK_PAIRS, POINT_COLOR
 from typing import List, Dict
 
-CFG_PATH = 'big_challenges/DeepProtect/hrnet/configs/hrnet_config.yaml'
+CFG_PATH = 'DeepProtect/hrnet/configs/hrnet_config.yaml'
 
 class PoseEstimator():
     def __init__(self):
@@ -18,7 +18,7 @@ class PoseEstimator():
     def keypoints_detect(self, img: np.ndarray, bbox: List,
                          flip: bool = False) -> Dict[str, Dict]:
         coords, confs = self.model(img, bbox)
-        print(confs)
+        # print(confs)
         keypoints = dict()
         for pred, conf, idx in zip(coords, confs, range(
                 len(self.cfg['KEYPOINTS_NAMES']))):

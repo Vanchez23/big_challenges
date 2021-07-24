@@ -15,6 +15,8 @@ class Detector():
         img = orig_img
         config = {'num_people': 0, 'all_wear': False, 'finally': False, 'reason': 0}
         config['num_people'], bbox = self.people_detector.detect(orig_img)
+        # if bbox is not None:
+        #     cv2.rectangle(orig_img, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 0, 0), 2, cv2.LINE_AA)
         if config['num_people'] == 1:
             wear = self.wear_detector.detect(orig_img, isDrawing = isDrawing)
             if isDrawing:

@@ -6,11 +6,11 @@ from math import hypot
 
 class Wear:
     def padding(self, box, padx, pady):
-        box['xmin'] -= padx
-        box['xmax'] += padx
+        box['x1'] -= padx
+        box['x2'] += padx
 
-        box['ymin'] -= pady
-        box['ymax'] += pady
+        box['y1'] -= pady
+        box['y2'] += pady
         return box
 
     def distance(self, p1, p2):
@@ -38,11 +38,11 @@ class Wear:
                 if 'glove' in name and row['label'] == 'gloves':
                     if ind_box in popusk:
                         continue
+                    row = self.padding(row, 20, 20)
                     if (coord[0] >= row['x1'] and coord[0] <= row['x2'] and
                         coord[1] >= row['y1'] and coord[1] <= row['y2']):
                         mas[ind] = True
                         popusk.append(ind_box)
-                        print('Basic Checking')
                     else:
                         jacket_df = df[df['label'] == 'jacket'].iloc[0]
                         boxA = [row['x1'].item(), row['y1'].item(), row['x2'].item(), row['y2'].item()]
@@ -50,7 +50,7 @@ class Wear:
                         sq = self.box_intersection(boxA, boxB) * 100
                         if sq > 40:
                             mas[ind] = True
-                        print('Square checked')
+                    #     print('Square checked')
                 elif row['label'] == name:
                     if (coord[0] >= row['x1'] and coord[0] <= row['x2'] and
                         coord[1] >= row['y1'] and coord[1] <= row['y2']):
