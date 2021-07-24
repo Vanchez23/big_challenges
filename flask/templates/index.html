@@ -25,24 +25,31 @@
 <body>
 
 
-<div class="row">
-    <div class="col-lg-8  offset-lg-1">
-        <img src="{{ url_for('video_feed') }}" height="80%" class="center-block" >
-        <form method="post" action="{{ url_for('tasks') }}">
-            {% if reason == True %}
-            <h1>{{ url_for(res) }}</h1>
-        {% endif %}
-        {% if num == True %}
-            <input class="btn btn-dark" type="submit" value="Отображение боксов/ключевых точек" name="show_boxes" />
+<div align="center">
+        <img src="{{ url_for('video_feed') }}" width="50%">
+        <form method="post" action="{{ url_for('tasks') }}" height="100%" width="100%">
 
-         {% else  %}
-            <input class="btn btn-light" type="submit" value="Отображение боксов/ключевых точек" name="show_boxes" />
-         {% endif %}
-
-        <input class="btn btn-light" type="submit" value="Подробный отчёт" name="reason" />
+        <div>
+            <table align="center" width="50%" cellpadding="1" cellspacing="1" border="1">
+                <tr>
+                    <td width="50%">
+                {% if num == True %}
+                    <input class="btn btn-dark" style="width:100%" type="submit" value="Отображение боксов/ключевых точек" name="show_boxes" />
+                 {% else  %}
+                    <input class="btn btn-danger" style="width:100%" type="submit" value="Отображение боксов/ключевых точек" name="show_boxes" />
+                {% endif %}
+                    </td>
+                    <td width="50%">
+                 {% if reason == True %}
+                    <input class="btn btn-dark" style="width:100%" type="submit" value="Подробный отчёт" name="reason" />
+                 {% else  %}
+                    <input class="btn btn-danger" style="width:100%" type="submit" value="Подробный отчёт" name="reason" />
+                 {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
         </form>
-
-    </div>
 </div>
 
 </body>

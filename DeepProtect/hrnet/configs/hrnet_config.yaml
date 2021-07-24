@@ -5,7 +5,7 @@
     ENABLED: true
   GPUS: 
     - 0
-  WEIGHTS: big_challenges/DeepProtect/weights/pose_hrnet_w32_256x192.pth
+  WEIGHTS: ../DeepProtect/weights/pose_hrnet_w32_256x192.pth
   IMG_SIZE:
     - 256
     - 192

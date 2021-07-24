@@ -9,7 +9,7 @@ import sys
 sys.path.insert(0,'..')
 import mediapipe as mp
 from DeepProtect import Detector
-
+from PIL import Image, ImageDraw, ImageFont
 
 pose_estimation=0
 show_boxes = 0
@@ -19,6 +19,12 @@ REASON = {0:'Всё хорошо',
           2:'Больше чем 1 человек',
           3:'Не хватает элемента спецодежды',
           4:'Одежда не на человек'}
+
+# REASON = {0: 'It s okay',
+#           1: 'There are no people in the frame',
+#           2: 'More than 1 person',
+#           3: 'A piece of workwear is missing',
+#           4: 'Clothes not per person'}
 res_ = 0
 #instatiate flask app  
 app = Flask(__name__, template_folder='./templates')
@@ -32,11 +38,53 @@ def gen_frames():  # generate frame by frame from camera
         image = client.read(raw=True)
         res = detector.detect(image, isDrawing= show_boxes)
         frame = res[1] if show_boxes else image
+        h, w, c = frame.shape
+
+        top_pad = np.ones((80, w, c), dtype=np.uint8) * 200
+        low_pad = np.ones((50, w, c), dtype=np.uint8) * 200
+        frame = np.vstack([top_pad, frame, low_pad])
+
+        frame = Image.fromarray(frame)
+        draw = ImageDraw.Draw(frame)
+        f_font = ImageFont.truetype("FreeMono.ttf", 60, encoding='UTF-8')
+        finally_ = res[0].get('finally')  # статус
+
+        if finally_:
+            draw.text((w // 3, 5), 'Комплектно', font=f_font, fill="green")
+        else:
+            draw.text((w // 3, 5), 'Некомплектно', font=f_font, fill="blue")
+
+        frame = np.array(frame)
+
         if(reason):
             res = detector.detect(image, isDrawing=show_boxes)
             frame = res[1] if show_boxes else image
             reason_ = res[0].get('reason')
+
+            finally_ = res[0].get('finally') # статус
+
             res_ =  REASON.get(reason_)
+
+            h, w, c = frame.shape
+            top_pad = np.ones((80, w, c), dtype=np.uint8) * 200
+            low_pad = np.ones((50, w, c), dtype=np.uint8) * 200
+            frame = np.vstack([top_pad, frame, low_pad])
+
+
+            frame = Image.fromarray(frame)
+            draw = ImageDraw.Draw(frame)
+            font = ImageFont.truetype("FreeMono.ttf", 30, encoding='UTF-8')
+            f_font = ImageFont.truetype("FreeMono.ttf", 60, encoding='UTF-8')
+
+
+            if finally_:
+                draw.text((w//3, 10), 'Комплектно', font=f_font, fill="green")
+            else:
+                draw.text((w//3, 10), 'Некомплектно', font=f_font, fill="blue")
+
+            x = (w - len(res_) * 10) // 2 - w // 12
+            draw.text((x, h+85), res_, font=font, fill="black")
+            frame = np.array(frame)
 
         try:
             ret, buffer = cv2.imencode('.jpg', frame)
@@ -74,7 +122,7 @@ def tasks():
 
     elif request.method=='GET':
         return render_template('index.html')
-    return render_template('index.html', num = show_boxes,reason = reason,res = res_)
+    return render_template('index.html', num = show_boxes,reason = reason)
 
 
 
