@@ -2,9 +2,9 @@
 # import mediapipe as mp
 import os
 import yaml
-from big_challenges.DeepProtect.hrnet import HRNetModel
+from DeepProtect.hrnet import HRNetModel
 import numpy as np
-from big_challenges.DeepProtect.hrnet.utils.utils_hrnet import draw_joints, draw_points, COLORS, LINK_PAIRS, POINT_COLOR
+from DeepProtect.hrnet.utils.utils_hrnet import draw_joints, draw_points, COLORS, LINK_PAIRS, POINT_COLOR
 from typing import List, Dict
 
 CFG_PATH = 'DeepProtect/hrnet/configs/hrnet_config.yaml'
