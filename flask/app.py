@@ -27,13 +27,17 @@ res_ = 0
 
 app = Flask(__name__, template_folder='./templates')
 detector = Detector(path_to_model='/home/student/model/best.pt')
-client = rtsp.Client(rtsp_server_uri='rtsp://admin:camera12345@172.22.103.2', verbose=True)
+# client = rtsp.Client(rtsp_server_uri='rtsp://admin:camera12345@172.22.103.2', verbose=True)
+# API_CAMERA = 'rtsp://admin:camera12345@172.22.103.2'
+client = cv2.VideoCapture('flask/Artem4.mp4')
+# client = cv2.VideoCapture(API_CAMERA)
 
 
 def gen_frames():
     global res_, max_ticks, cur_tick
     while client.isOpened():
-        image = client.read(raw=True)
+        client.grab()
+        success, image = client.read()
         res = detector.detect(image, isDrawing=show_boxes)
         frame = res[1] if show_boxes else image
         h, w, c = frame.shape
