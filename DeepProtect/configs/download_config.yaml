@@ -1,0 +1,10 @@
+keypoints_model:
+        id: "1zYC7go9EV0XaSlSBjMaiyE_4TcHc_S38"
+        type: "google_drive"
+        path: "weights/pose_hrnet_w32_256x192.pth"
+        
+clothes_model:
+        id: "1OWWdwDOdz9gHUiF_lKbBNiM65Yy0q0zC"
+        type: "google_drive"
+        path: "weights/Ilya_best_after_6epoch_24_07_21.pth"
+
