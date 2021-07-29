@@ -7,7 +7,7 @@ import torch
 import torch.backends.cudnn as cudnn
 import torchvision.transforms as transforms
 
-from .hrnet import get_pose_net
+from .pose_hrnet import get_pose_net
 from .utils.torch_utils import select_device
 from .utils.utils_hrnet import get_max_preds
 

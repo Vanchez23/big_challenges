@@ -1,4 +1,0 @@
-keypoints_model:
-        id: "1zYC7go9EV0XaSlSBjMaiyE_4TcHc_S38"
-        type: "google_drive"
-        path: "weights/pose_hrnet_w32_256x192.pth"

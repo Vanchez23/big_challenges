@@ -2,13 +2,12 @@ from .people_detection import PeopleDetector
 from .special_wear_detector import WearDetector
 from .pose_estimation import PoseEstimator
 from .check_complit import CheckComplite
-import cv2
 
 class Detector():
-    def __init__(self, image_size = 640, size_model = 2, cam_num = 0, path_to_model = ''):
+    def __init__(self, image_size = 640, size_model = 2, cam_num = 0, path_to_model = '', hrnet_config_path=''):
         self.people_detector = PeopleDetector()
         self.wear_detector = WearDetector(path = path_to_model)
-        self.pose_estimation = PoseEstimator()
+        self.pose_estimation = PoseEstimator(hrnet_config_path)
         self.check_complit = CheckComplite()
 
     def detect(self, orig_img, isDrawing = True):

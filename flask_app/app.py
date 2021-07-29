@@ -1,41 +1,23 @@
-import sys
-sys.path.append('.')
-
+# import sys
+# sys.path.append('.')
+#
 import numpy as np
 import cv2
 import rtsp
+import yaml
+import copy
 from PIL import Image, ImageDraw, ImageFont
 from flask import Flask, render_template, Response, request
 
 from DeepProtect import Detector
 
-max_ticks = 25
-cur_tick = 0
-pose_estimation = 0
-show_boxes = 0
-reason = 0
-REASON = {
-    0: 'Всё хорошо',
-    1: 'Нет людей в кадре',
-    2: 'Больше чем 1 человек',
-    3: 'Не хватает элемента спецодежды',
-    4: 'Одежда не на человек',
-}
-
-
-res_ = 0
-
-app = Flask(__name__, template_folder='./templates')
-detector = Detector(path_to_model='/home/student/model/best.pt')
-client = rtsp.Client(rtsp_server_uri='rtsp://admin:camera12345@172.22.103.2', verbose=True)
-
+app = Flask(__name__)
 
 def gen_frames():
-    global res_, max_ticks, cur_tick
     while client.isOpened():
         image = client.read(raw=True)
-        res = detector.detect(image, isDrawing=show_boxes)
-        frame = res[1] if show_boxes else image
+        res = detector.detect(image, isDrawing=cfg['APP']['SHOW_BOXES'])
+        frame = res[1] if cfg['APP']['SHOW_BOXES'] else image
         h, w, c = frame.shape
 
         top_pad = np.ones((80, w, c), dtype=np.uint8) * 200
@@ -45,23 +27,23 @@ def gen_frames():
         frame = Image.fromarray(frame)
         draw = ImageDraw.Draw(frame)
 
-        if reason:
+        if cfg['APP']['SHOW_REASON']:
             reason_key = res[0].get('reason')
-            res_ = REASON.get(reason_key)
+            reason = cfg['APP']['REASON_INFO'].get(reason_key)
             font = ImageFont.truetype("FreeMono.ttf", 30, encoding='UTF-8')
-            x = (w - len(res_) * 10) // 2 - w // 12
-            draw.text((x, h + 85), res_, font=font, fill="black")
+            x = (w - len(reason) * 10) // 2 - w // 12
+            draw.text((x, h + 85), reason, font=font, fill="black")
 
         f_font = ImageFont.truetype("FreeMono.ttf", 60, encoding='UTF-8')
         finally_ = res[0].get('finally')  # статус
-        cur_tick = 1 if finally_ else cur_tick
+        cfg['APP']['CUR_TICK'] = 1 if finally_ else cfg['APP']['CUR_TICK']
 
-        if 0 < cur_tick <= max_ticks:
+        if 0 < cfg['APP']['CUR_TICK'] <= cfg['APP']['MAX_TICKS']:
             draw.text((w // 3, 5), 'Комплектно', font=f_font, fill="green")
-            cur_tick += 1
+            cfg['APP']['CUR_TICK'] += 1
         else:
             draw.text((w // 3, 5), 'Некомплектно', font=f_font, fill="blue")
-            cur_tick = 0
+            cfg['APP']['CUR_TICK'] = 0
 
         frame = np.array(frame)
 
@@ -88,20 +70,35 @@ def video_feed():
 
 @app.route('/requests', methods=['POST', 'GET'])
 def tasks():
-    global pose_estimation, show_boxes
     if request.method == 'POST':
         if request.form.get('show_boxes') == 'Отображение боксов/ключевых точек':
-            global show_boxes
-            show_boxes = not show_boxes
+            cfg['APP']['SHOW_BOXES'] = not cfg['APP']['SHOW_BOXES']
 
         elif request.form.get('reason') == 'Подробный отчёт':
-            global reason
-            reason = not reason
+            cfg['APP']['SHOW_REASON'] = not cfg['APP']['SHOW_REASON']
 
     elif request.method == 'GET':
         return render_template('index.html')
-    return render_template('index.html', num=show_boxes, reason=reason)
+    return render_template('index.html', num=cfg['APP']['SHOW_BOXES'], reason=cfg['APP']['SHOW_REASON'])
 
+def main(cfg_path):
+
+    global detector, client, cfg
+    with open(cfg_path) as f:
+        cfg = yaml.safe_load(f)
+    cfg = copy.deepcopy(cfg)
+    app.template_folder = cfg['APP']['TEMPLATE_FOLDER']
+    detector = Detector(path_to_model=cfg['SYSTEM']['CLOTHES_MODEL_WEIGHTS_PATH'],
+                        hrnet_config_path=cfg['SYSTEM']['KEYP_MODEL_CFG_PATH'])
+    client = rtsp.Client(rtsp_server_uri=cfg['APP']['RTSP_URI'], verbose=True)
+
+    cfg['APP']['CUR_TICK'] = 0
+    app.run()
 
 if __name__ == '__main__':
-    app.run()
+    import sys
+    config_name = 'flask_app/app_config.yaml'
+    argv = sys.argv
+    if len(argv) <= 2:
+        config_name = argv[1]
+    main(config_name)

@@ -1,0 +1,15 @@
+APP:
+  MAX_TICKS: 25
+  SHOW_BOXES: false
+  SHOW_REASON: false
+  REASON_INFO:
+    0: "Всё хорошо"
+    1: "Нет людей в кадре"
+    2: "Больше чем 1 человек"
+    3: "Не хватает элемента спецодежды"
+    4: "Одежда не на человек"
+  TEMPLATE_FOLDER: "./templates"
+  RTSP_URI: "rtsp://admin:camera12345@172.22.103.2"
+SYSTEM:
+  KEYP_MODEL_CFG_PATH: DeepProtect/configs/hrnet_config.yaml
+  CLOTHES_MODEL_WEIGHTS_PATH: weights/Ilya_best_after_6epoch_24_07_21.pth

@@ -36,7 +36,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--config_name',
-        default=Path('wearing_detector/configs/download_config.yaml'),
+        default=Path('DeepProtect/configs/download_config.yaml'),
         type=str,
         help='path to download config file')
     parser.add_argument(
