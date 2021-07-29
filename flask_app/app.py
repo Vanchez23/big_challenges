@@ -96,9 +96,8 @@ def main(cfg_path):
     app.run()
 
 if __name__ == '__main__':
-    import sys
     config_name = 'flask_app/app_config.yaml'
     argv = sys.argv
-    if len(argv) <= 2:
+    if len(argv) == 2:
         config_name = argv[1]
     main(config_name)
